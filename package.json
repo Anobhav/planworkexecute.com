@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "redis": "^6.2.1"
+  }
+}
