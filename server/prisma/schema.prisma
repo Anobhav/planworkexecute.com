@@ -1,26 +1,74 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-model User{
-  id String @id @default(uuid())
-  name String 
-  email String @unique
-  passwordHash String
-  timezone String
-  avatarUrl String?
-  isVerified Boolean @default(false)
-  currentStreak Int @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model User {
+  id                           String   @id @default(uuid())
+  name                         String
+  email                        String   @unique
+  passwordHash                 String
+  timezone                     String
+  avatarUrl                    String?
+  isVerified                   Boolean  @default(false)
+  dailyProductivityGoalMinutes Int      @default(60)
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
+
+  subjects           Subject[]
+  productivityMonths ProductivityMonth[]
+  plannerTasks       PlannerTask[]
+  goals              Goal[]
+}
+
+model Subject {
+  id          String @id @default(uuid())
+  userId      String
+  subjectname String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, subjectname])
+}
+
+model ProductivityMonth {
+  id     String @id @default(uuid())
+  userId String
+  year   Int
+  month  Int
+  data   Json
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, year, month])
+}
+
+model PlannerTask {
+  id                      String   @id @default(uuid())
+  userId                  String
+  title                   String
+  priority                Priority
+  estimateDurationMinutes Int
+  isCompleted             Boolean  @default(false)
+  date                    DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Goal {
+  id         String   @id @default(uuid())
+  userId     String
+  title      String
+  targetDate DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

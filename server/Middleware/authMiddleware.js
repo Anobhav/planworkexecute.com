@@ -1,4 +1,4 @@
-const redis = require("../config/redis")
+const redis = require('../Config/redis')
 
 const authMiddleware = async (req, res, next) => {
     const sessionId = req.cookies.sessionId
